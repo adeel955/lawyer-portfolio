@@ -99,14 +99,48 @@ function animateCounters() {
     });
 }
 
-// ===== Scroll Animations (Fade In) =====
+// ===== Enhanced Scroll Animations =====
 function initScrollAnimations() {
-    const elements = document.querySelectorAll(
-        '.practice-card, .exp-card, .testimonial-card, .about-content, .about-image, .contact-info, .contact-form, .timeline-item'
-    );
+    // Section headers
+    document.querySelectorAll('.section-header').forEach(el => {
+        el.classList.add('fade-in');
+    });
 
-    elements.forEach(el => el.classList.add('fade-in'));
+    // About section - left/right animations
+    document.querySelectorAll('.about-image').forEach(el => {
+        el.classList.add('fade-in-left');
+    });
+    document.querySelectorAll('.about-content').forEach(el => {
+        el.classList.add('fade-in-right');
+    });
 
+    // Cards with stagger effect
+    document.querySelectorAll('.practice-card').forEach((el, index) => {
+        el.classList.add('fade-in', `stagger-${(index % 6) + 1}`);
+    });
+    
+    document.querySelectorAll('.exp-card').forEach((el, index) => {
+        el.classList.add('fade-in', `stagger-${(index % 4) + 1}`);
+    });
+    
+    document.querySelectorAll('.testimonial-card').forEach((el, index) => {
+        el.classList.add('fade-in', `stagger-${(index % 3) + 1}`);
+    });
+
+    // Timeline items
+    document.querySelectorAll('.timeline-item').forEach((el, index) => {
+        el.classList.add('fade-in', `stagger-${(index % 4) + 1}`);
+    });
+
+    // Contact section
+    document.querySelectorAll('.contact-info').forEach(el => {
+        el.classList.add('fade-in-left');
+    });
+    document.querySelectorAll('.contact-form').forEach(el => {
+        el.classList.add('fade-in-right');
+    });
+
+    // Create intersection observer
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -116,10 +150,49 @@ function initScrollAnimations() {
         });
     }, {
         threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        rootMargin: '0px 0px -80px 0px'
     });
 
-    elements.forEach(el => observer.observe(el));
+    // Observe all animated elements
+    document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+// ===== Parallax Effect for Hero =====
+function initParallax() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        if (scrolled < window.innerHeight) {
+            hero.style.setProperty('--parallax-offset', `${scrolled * 0.3}px`);
+        }
+    });
+}
+
+// ===== Typing Effect for Hero (Optional) =====
+function initTypingEffect() {
+    const heroTitle = document.querySelector('.hero h1 .gold');
+    if (!heroTitle) return;
+    
+    const text = heroTitle.textContent;
+    heroTitle.textContent = '';
+    heroTitle.style.borderRight = '2px solid var(--gold)';
+    
+    let i = 0;
+    const typeWriter = () => {
+        if (i < text.length) {
+            heroTitle.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 80);
+        } else {
+            heroTitle.style.borderRight = 'none';
+        }
+    };
+    
+    setTimeout(typeWriter, 1200);
 }
 
 // ===== Counter Observer =====
@@ -186,4 +259,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     updateActiveNav();
+    initParallax();
+    
+    // Add page loaded class for animations
+    document.body.classList.add('page-loaded');
+    
+    // Smooth reveal on page load
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
+});
+
+// ===== Preloader (optional) =====
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
 });
